@@ -880,8 +880,13 @@ class WP_Rewrite {
 		if ( $endpoints ) {
 			$ep_query_append = array();
 			foreach ( (array) $this->endpoints as $endpoint ) {
-				// Match everything after the endpoint name, but allow for nothing to appear there.
+				// Default :: Match everything after the endpoint name, but allow for nothing to appear there.
 				$epmatch = $endpoint[1] . '(/(.*))?/?$';
+
+				// Only Match the endpoint name if has_match was set to false
+				if( isset( $endpoint[3]) && false === $endpoint[3] ) {
+					$epmatch = $endpoint[1] . '/?$';
+				}
 
 				// This will be appended on to the rest of the query for each dir.
 				$epquery                     = '&' . $endpoint[2] . '=';
@@ -1677,15 +1682,17 @@ class WP_Rewrite {
 	 * @param string|bool $query_var Optional. Name of the corresponding query variable. Pass `false` to
 	 *                               skip registering a query_var for this endpoint. Defaults to the
 	 *                               value of `$name`.
+	 * @param bool        $has_match Optional. Flag to determine if the rewrite rule should allow for matching after the
+	 *                               name. true (default) will have "NAME(/(.*))?/?$", false will use "NAME/?$"
 	 */
-	public function add_endpoint( $name, $places, $query_var = true ) {
+	public function add_endpoint( $name, $places, $query_var = true, $has_match = true ) {
 		global $wp;
 
 		// For backward compatibility, if null has explicitly been passed as `$query_var`, assume `true`.
 		if ( true === $query_var || null === func_get_arg( 2 ) ) {
 			$query_var = $name;
 		}
-		$this->endpoints[] = array( $places, $name, $query_var );
+		$this->endpoints[] = array( $places, $name, $query_var, $has_match );
 
 		if ( $query_var ) {
 			$wp->add_query_var( $query_var );

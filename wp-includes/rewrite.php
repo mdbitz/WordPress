@@ -307,10 +307,12 @@ function flush_rewrite_rules( $hard = true ) {
  * @param int         $places    Endpoint mask describing the places the endpoint should be added.
  * @param string|bool $query_var Name of the corresponding query variable. Pass `false` to skip registering a query_var
  *                               for this endpoint. Defaults to the value of `$name`.
+ * @param bool        $has_match Optional. Flag to determine if the rewrite rule should allow for matching after the
+ *                               name. true (default) will have "NAME(/(.*))?/?$", false will use "NAME/?$"
  */
-function add_rewrite_endpoint( $name, $places, $query_var = true ) {
+function add_rewrite_endpoint( $name, $places, $query_var = true, $has_match = true ) {
 	global $wp_rewrite;
-	$wp_rewrite->add_endpoint( $name, $places, $query_var );
+	$wp_rewrite->add_endpoint( $name, $places, $query_var, $has_match );
 }
 
 /**
